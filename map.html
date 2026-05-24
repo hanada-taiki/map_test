@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Building Map</title>
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script>
+    // 地図作成
+    const map = L.map("map");
+
+    // OpenStreetMap タイル
+    L.tileLayer(
+      "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 20,
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+      }
+    ).addTo(map);
+
+    // GeoJSON 読み込み
+    fetch("./osm-東広島キャンパス工学部building.geojson")
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("GeoJSON ファイルが読み込めません");
+        }
+        return response.json();
+      })
+
+      .then(buildings => {
+
+        console.log(buildings);
+
+        // GeoJSON レイヤ
+        const layer = L.geoJSON(buildings, {
+
+          // 建物スタイル
+          style: feature => ({
+            color: "#333",
+            weight: 1,
+            fillColor:
+              feature.properties["building:colour"] || "#3388ff",
+            fillOpacity: 0.6
+          }),
+
+          // ポップアップ
+          onEachFeature: (feature, layer) => {
+
+            const name =
+              feature.properties.name || "名称なし";
+
+            layer.bindPopup(name);
+          }
+
+        }).addTo(map);
+
+        // 建物全体が見える位置へ
+        map.fitBounds(layer.getBounds());
+
+      })
+
+      .catch(error => {
+        console.error(
+          "GeoJSON 読み込み失敗:",
+          error
+        );
+      });
+  </script>
+</body>
+</html>
