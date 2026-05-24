@@ -44,7 +44,7 @@
     ).addTo(map);
 
     // GeoJSON 読み込み
-    fetch("./buildings.geojson")
+    fetch("./output.geojson")
       .then(response => {
         if (!response.ok) {
           throw new Error("GeoJSON ファイルが読み込めません");
