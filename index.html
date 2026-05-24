@@ -44,7 +44,7 @@
     ).addTo(map);
 
     // GeoJSON 読み込み
-    fetch("./osm-東広島キャンパス工学部building.geojson")
+    fetch("./buildings.geojson")
       .then(response => {
         if (!response.ok) {
           throw new Error("GeoJSON ファイルが読み込めません");
