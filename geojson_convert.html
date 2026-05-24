@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>GeoJSON Converter Tool</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+
+    #output {
+      white-space: pre;
+      background: #111;
+      color: #0f0;
+      padding: 10px;
+      height: 400px;
+      overflow: auto;
+    }
+
+    button {
+      margin: 10px 0;
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>GeoJSON 変換ツール</h2>
+
+<input type="file" id="file" accept=".geojson,.json">
+<br>
+
+<button id="convert">変換</button>
+<button id="download">ダウンロード</button>
+
+<pre id="output">ここに結果が表示されます</pre>
+
+<script>
+let convertedData = null;
+
+// ファイル読み込み
+let rawText = "";
+
+document.getElementById("file").addEventListener("change", e => {
+  const file = e.target.files[0];
+
+  const reader = new FileReader();
+  reader.onload = event => {
+    rawText = event.target.result;
+    document.getElementById("output").textContent = "読み込み完了";
+  };
+
+  reader.readAsText(file);
+});
+
+// 変換処理
+document.getElementById("convert").onclick = () => {
+
+  const lines = rawText
+    .split("\n")
+    .map(l => l.trim())
+    .filter(l => l.startsWith("{"));
+
+  const features = [];
+
+  for (const line of lines) {
+    try {
+      const data = JSON.parse(line);
+
+      features.push({
+        type: "Feature",
+        properties: {
+          name: data.properties?.name || "名称なし",
+          "building:colour":
+            data.properties?.["building:colour"] || "#3388ff"
+        },
+        geometry: data.geometry
+      });
+
+    } catch (e) {
+      console.warn("skip:", line);
+    }
+  }
+
+  convertedData = {
+    type: "FeatureCollection",
+    features: features
+  };
+
+  document.getElementById("output").textContent =
+    JSON.stringify(convertedData, null, 2);
+};
+
+// ダウンロード
+document.getElementById("download").onclick = () => {
+
+  if (!convertedData) {
+    alert("先に変換してください");
+    return;
+  }
+
+  const blob = new Blob(
+    [JSON.stringify(convertedData, null, 2)],
+    { type: "application/json" }
+  );
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "output.geojson";
+  a.click();
+
+  URL.revokeObjectURL(url);
+};
+
+</script>
+
+</body>
+</html>
