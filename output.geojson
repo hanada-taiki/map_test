@@ -5,7 +5,7 @@
       "type": "Feature",
       "properties": {
         "name": "N35 管理棟",
-        "building:colour": "#BA8467"
+        "building:colour": "#ff0000"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -367,7 +367,7 @@
       "type": "Feature",
       "properties": {
         "name": "N01 本部棟",
-        "building:colour": "#DC143C"
+        "building:colour": "#dc143c"
       },
       "geometry": {
         "type": "MultiPolygon",
