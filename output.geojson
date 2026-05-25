@@ -367,7 +367,7 @@
       "type": "Feature",
       "properties": {
         "name": "N01 本部棟",
-        "building:colour": "#A39793"
+        "building:colour": "#DC143C"
       },
       "geometry": {
         "type": "MultiPolygon",
